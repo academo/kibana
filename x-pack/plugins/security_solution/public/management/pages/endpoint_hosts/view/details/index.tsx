@@ -11,7 +11,7 @@ import { useEndpointSelector } from '../hooks';
 import { uiQueryParams } from '../../store/selectors';
 
 import { getEndpointListPath } from '../../../../common/routing';
-import { EndpointDetails } from './endpoint_details';
+import { EndpointDetails } from '../../../../../common/components/endpoint_details/endpoint_details';
 
 export const EndpointDetailsFlyout = memo(() => {
   const history = useHistory();
