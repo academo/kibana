@@ -401,6 +401,11 @@ export const endpointListReducer: StateReducer = (state = initialEndpointPageSta
     };
   } else if (action.type === 'metadataTransformStatsChanged') {
     return handleMetadataTransformStatsChanged(state, action);
+  } else if (action.type === 'serverReturnedEndpointActionsConsoleData') {
+    return {
+      ...state,
+      actionsConsoleData: action.payload,
+    };
   }
 
   return state;

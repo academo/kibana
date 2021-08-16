@@ -108,6 +108,25 @@ export interface EndpointState {
   endpointPendingActions: AsyncResourceState<AgentIdsPendingActions>;
   // Metadata transform stats to checking transform state
   metadataTransformStats: AsyncResourceState<TransformStats[]>;
+  actionsConsoleData?: EndpointActionsConsoleData;
+}
+
+export interface EndpointActionsConsoleAction {
+  name: string;
+}
+
+export interface EndpointActionsConsoleExecutedAction {
+  action: EndpointActionsConsoleAction;
+  startDate: string;
+  endDate?: string;
+  status: 'done' | 'pending' | 'failed';
+  response?: string;
+}
+
+export interface EndpointActionsConsoleData {
+  availableActions: EndpointActionsConsoleAction[];
+  pendingActions: EndpointActionsConsoleExecutedAction[];
+  actionsTimeline: EndpointActionsConsoleExecutedAction[];
 }
 
 export type AgentIdsPendingActions = Map<string, EndpointPendingActions['pending_actions']>;

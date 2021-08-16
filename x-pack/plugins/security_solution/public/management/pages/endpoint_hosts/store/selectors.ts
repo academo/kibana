@@ -387,6 +387,10 @@ export const getActivityLogData = (
 ): Immutable<EndpointState['endpointDetails']['activityLog']['logData']> =>
   state.endpointDetails.activityLog.logData;
 
+export const getEndpointActionsConsoleData = (
+  state: Immutable<EndpointState>
+): Immutable<EndpointState['actionsConsoleData']> => state.actionsConsoleData;
+
 export const getLastLoadedActivityLogData: (
   state: Immutable<EndpointState>
 ) => Immutable<ActivityLog> | undefined = createSelector(getActivityLogData, (activityLog) => {

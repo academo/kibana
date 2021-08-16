@@ -5,21 +5,80 @@
  * 2.0.
  */
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { HostInfo, HostMetadata, HostStatus } from '../../../../../../common/endpoint/types';
-import { uiQueryParams } from '../../store/selectors';
+import {
+  EuiButton,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiSpacer,
+  EuiSuperSelect,
+  EuiTitle,
+} from '@elastic/eui';
+import React, { useEffect, useState } from 'react';
+import { FormattedMessage } from '@kbn/i18n/react';
+import { getEndpointActionsConsoleData } from '../../store/selectors';
 import { useEndpointSelector } from '../hooks';
 
-export const EndpointActionsConsole = ({
-  details,
-  policyInfo,
-  hostStatus,
-}: {
-  details: HostMetadata;
-  policyInfo?: HostInfo['policy_info'];
-  hostStatus: HostStatus;
-}) => {
-  return <b>{'Console here'}</b>;
+export const EndpointActionsConsole = () => {
+  const actionsConsoleData = useEndpointSelector(getEndpointActionsConsoleData);
+  const [selectedAction, setSelectedAction] = useState('');
+
+  useEffect(() => {
+    if (
+      actionsConsoleData !== undefined &&
+      selectedAction === '' &&
+      actionsConsoleData?.availableActions?.length > 0
+    ) {
+      setSelectedAction(actionsConsoleData.availableActions[0].name);
+    }
+  }, [actionsConsoleData, selectedAction]);
+
+  const ConsoleActionsDropdown = () => {
+    if (actionsConsoleData?.availableActions === undefined) {
+      return <></>;
+    }
+    const selectOptions = [];
+    const availableActions = actionsConsoleData?.availableActions ?? [];
+    for (const action of availableActions) {
+      selectOptions.push({
+        value: action.name,
+        inputDisplay: action.name,
+      });
+    }
+    return (
+      <EuiSuperSelect
+        options={selectOptions}
+        valueOfSelected={selectedAction}
+        onChange={setSelectedAction}
+        hasDividers
+      />
+    );
+  };
+
+  return (
+    <>
+      <EuiTitle size="m">
+        <h4>
+          <FormattedMessage
+            id="xpack.securitySolution.endpoint.actionsConsole.execute"
+            defaultMessage="Execute an Action"
+          />
+        </h4>
+      </EuiTitle>
+      <EuiSpacer size="s" />
+      <EuiFlexGroup>
+        <EuiFlexItem>
+          <ConsoleActionsDropdown />
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiButton>
+            <FormattedMessage
+              id="xpack.securitySolution.endpoint.actionsConsole.execute"
+              defaultMessage="Execute"
+            />
+          </EuiButton>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </>
+  );
 };
 EndpointActionsConsole.displayName = 'EndpointActionsConsole';

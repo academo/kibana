@@ -15,12 +15,17 @@ import {
 } from '../../../../../common/endpoint/types';
 import { ServerApiError } from '../../../../common/types';
 import { GetPolicyListResponse } from '../../policy/types';
-import { EndpointState } from '../types';
+import { EndpointActionsConsoleData, EndpointState } from '../types';
 import { IIndexPattern } from '../../../../../../../../src/plugins/data/public';
 
 export interface ServerReturnedEndpointList {
   type: 'serverReturnedEndpointList';
   payload: HostResultList;
+}
+
+export interface ServerReturnedEndpointActionsConsoleData {
+  type: 'serverReturnedEndpointActionsConsoleData';
+  payload: EndpointActionsConsoleData;
 }
 
 export interface ServerFailedToReturnEndpointList {
@@ -190,6 +195,7 @@ export type EndpointAction =
   | ServerReturnedEndpointList
   | ServerFailedToReturnEndpointList
   | ServerReturnedEndpointDetails
+  | ServerReturnedEndpointActionsConsoleData
   | ServerFailedToReturnEndpointDetails
   | EndpointDetailsActivityLogUpdatePaging
   | EndpointDetailsActivityLogUpdateIsInvalidDateRange

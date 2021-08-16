@@ -113,16 +113,7 @@ export const EndpointDetails = memo(() => {
           name: 'endpointActionsConsole',
           selected_endpoint: id,
         }),
-        content:
-          hostDetails === undefined ? (
-            ContentLoadingMarkup
-          ) : (
-            <EndpointActionsConsole
-              details={hostDetails}
-              policyInfo={policyInfo}
-              hostStatus={hostStatus}
-            />
-          ),
+        content: hostDetails === undefined ? ContentLoadingMarkup : <EndpointActionsConsole />,
       },
     ],
     [ContentLoadingMarkup, hostDetails, policyInfo, hostStatus, activityLog, queryParams]

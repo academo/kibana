@@ -42,6 +42,7 @@ import {
 } from './selectors';
 import {
   AgentIdsPendingActions,
+  EndpointActionsConsoleData,
   EndpointState,
   PolicyIds,
   TransformStats,
@@ -70,7 +71,10 @@ import {
 import { isolateHost, unIsolateHost } from '../../../../common/lib/endpoint_isolation';
 import { AppAction } from '../../../../common/store/actions';
 import { resolvePathVariables } from '../../../../common/utils/resolve_path_variables';
-import { EndpointPackageInfoStateChanged } from './action';
+import {
+  EndpointPackageInfoStateChanged,
+  ServerReturnedEndpointActionsConsoleData,
+} from './action';
 import { fetchPendingActionsByAgentId } from '../../../../common/lib/endpoint_pending_actions';
 import { getIsInvalidDateRange } from '../utils';
 import { TRANSFORM_STATS_URL } from '../../../../../common/constants';
@@ -126,7 +130,7 @@ export const endpointMiddlewareFactory: ImmutableMiddlewareFactory<EndpointState
       getIsOnEndpointActionsConsole(getState())
     ) {
       const { selected_endpoint: selectedEndpoint } = uiQueryParams(getState());
-      loadEndpointActionsConsoleStatus({
+      loadEndpointActionsConsoleData({
         store,
         http: coreStart.http,
         selectedEndpoint,
@@ -607,10 +611,9 @@ async function endpointDetailsActivityLogPagingMiddleware({
   }
 }
 
-async function loadEndpointActionsConsoleStatus({
+async function loadEndpointActionsConsoleData({
   selectedEndpoint,
   store,
-  http,
 }: {
   store: ImmutableMiddlewareAPI<EndpointState, AppAction>;
   http: HttpStart;
@@ -619,7 +622,22 @@ async function loadEndpointActionsConsoleStatus({
   if (selectedEndpoint === undefined) {
     return;
   }
-  console.log('i am loading console status data', selectedEndpoint);
+
+  const { dispatch } = store;
+
+  dispatch({
+    type: 'serverReturnedEndpointActionsConsoleData',
+    payload: {
+      availableActions: [
+        { name: 'delete everything' },
+        { name: 'list quarantined items' },
+        { name: 'turn it off and on again' },
+        { name: 'make IE the default browser' },
+      ],
+      pendingActions: [],
+      actionsTimeline: [],
+    } as EndpointActionsConsoleData,
+  });
 }
 
 async function loadEndpointDetails({
