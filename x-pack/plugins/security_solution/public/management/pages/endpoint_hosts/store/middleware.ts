@@ -38,6 +38,7 @@ import {
   getIsOnEndpointDetailsActivityLog,
   getMetadataTransformStats,
   isMetadataTransformStatsLoading,
+  getIsOnEndpointActionsConsole,
 } from './selectors';
 import {
   AgentIdsPendingActions,
@@ -121,12 +122,24 @@ export const endpointMiddlewareFactory: ImmutableMiddlewareFactory<EndpointState
 
     if (
       action.type === 'userChangedUrl' &&
+      hasSelectedEndpoint(getState()) &&
+      getIsOnEndpointActionsConsole(getState())
+    ) {
+      const { selected_endpoint: selectedEndpoint } = uiQueryParams(getState());
+      loadEndpointActionsConsoleStatus({
+        store,
+        http: coreStart.http,
+        selectedEndpoint,
+      });
+    }
+
+    if (
+      action.type === 'userChangedUrl' &&
       hasSelectedEndpoint(getState()) === true &&
       getIsOnEndpointDetailsActivityLog(getState())
     ) {
       endpointDetailsActivityLogChangedMiddleware({ store, coreStart });
     }
-
     // page activity log API
     if (
       action.type === 'endpointDetailsActivityLogUpdatePaging' &&
@@ -592,6 +605,21 @@ async function endpointDetailsActivityLogPagingMiddleware({
       payload: createFailedResourceState<ActivityLog>(error.body ?? error),
     });
   }
+}
+
+async function loadEndpointActionsConsoleStatus({
+  selectedEndpoint,
+  store,
+  http,
+}: {
+  store: ImmutableMiddlewareAPI<EndpointState, AppAction>;
+  http: HttpStart;
+  selectedEndpoint?: string;
+}) {
+  if (selectedEndpoint === undefined) {
+    return;
+  }
+  console.log('i am loading console status data', selectedEndpoint);
 }
 
 async function loadEndpointDetails({

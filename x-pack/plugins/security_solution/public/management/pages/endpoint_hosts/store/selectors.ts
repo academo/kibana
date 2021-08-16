@@ -370,6 +370,12 @@ export const getIsOnEndpointDetailsActivityLog: (
   return searchParams.show === EndpointDetailsTabsTypes.activityLog;
 });
 
+export const getIsOnEndpointActionsConsole: (
+  state: Immutable<EndpointState>
+) => boolean = createSelector(uiQueryParams, (searchParams) => {
+  return searchParams.show === EndpointDetailsTabsTypes.actionsConsole;
+});
+
 export const getActivityLogDataPaging = (
   state: Immutable<EndpointState>
 ): Immutable<EndpointState['endpointDetails']['activityLog']['paging']> => {

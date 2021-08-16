@@ -6,7 +6,10 @@
  */
 
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { HostInfo, HostMetadata, HostStatus } from '../../../../../../common/endpoint/types';
+import { uiQueryParams } from '../../store/selectors';
+import { useEndpointSelector } from '../hooks';
 
 export const EndpointActionsConsole = ({
   details,
