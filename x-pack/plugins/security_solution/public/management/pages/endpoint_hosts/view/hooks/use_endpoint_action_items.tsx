@@ -59,6 +59,12 @@ export const useEndpointActionItems = (
         selected_endpoint: endpointId,
       });
 
+      const actionsConsolePath = getEndpointDetailsPath({
+        name: 'endpointActionsConsole',
+        ...currentUrlParams,
+        selected_endpoint: endpointId,
+      });
+
       const isolationActions = [];
 
       if (isIsolated) {
@@ -185,6 +191,22 @@ export const useEndpointActionItems = (
             <FormattedMessage
               id="xpack.securitySolution.endpoint.actions.agentPolicyReassign"
               defaultMessage="Reassign agent policy"
+            />
+          ),
+        },
+        {
+          icon: 'console',
+          key: 'endpointActionsConsole',
+          'data-test-subj': 'agentPolicyReassignLink',
+          navigateAppId: APP_ID,
+          navigateOptions: {
+            path: actionsConsolePath,
+          },
+          href: getAppUrl({ path: actionsConsolePath }),
+          children: (
+            <FormattedMessage
+              id="xpack.securitySolution.endpoint.actions.actionsConsole"
+              defaultMessage="Actions Console"
             />
           ),
         },

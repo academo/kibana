@@ -132,7 +132,13 @@ export interface EndpointIndexUIQueryParams {
   /** Which page to show */
   page_index?: string;
   /** show the policy response or host details */
-  show?: 'policy_response' | 'activity_log' | 'details' | 'isolate' | 'unisolate';
+  show?:
+    | 'policy_response'
+    | 'activity_log'
+    | 'details'
+    | 'isolate'
+    | 'unisolate'
+    | 'actions_console';
   /** Query text from search bar*/
   admin_query?: string;
 }

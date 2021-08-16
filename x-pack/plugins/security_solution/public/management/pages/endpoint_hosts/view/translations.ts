@@ -11,6 +11,13 @@ export const OVERVIEW = i18n.translate('xpack.securitySolution.endpointDetails.o
   defaultMessage: 'Overview',
 });
 
+export const ACTIONS_CONSOLE = i18n.translate(
+  'xpack.securitySolution.endpointDetails.actionsConsole',
+  {
+    defaultMessage: 'Actions Console',
+  }
+);
+
 export const ACTIVITY_LOG = {
   tabTitle: i18n.translate('xpack.securitySolution.endpointDetails.activityLog', {
     defaultMessage: 'Activity Log',

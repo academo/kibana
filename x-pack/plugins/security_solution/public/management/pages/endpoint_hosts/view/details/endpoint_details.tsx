@@ -46,6 +46,7 @@ import {
 import { EndpointIsolationFlyoutPanel } from './components/endpoint_isolate_flyout_panel';
 import { FlyoutBodyNoTopPadding } from './components/flyout_body_no_top_padding';
 import { EndpointDetailsFlyoutHeader } from './components/flyout_header';
+import { EndpointActionsConsole } from './endpoint_actions_console';
 import { EndpointActivityLog } from './endpoint_activity_log';
 import { EndpointDetailsContent } from './endpoint_details_content';
 import { PolicyResponse } from './policy_response';
@@ -104,6 +105,25 @@ export const EndpointDetails = memo(() => {
         }),
         content: <EndpointActivityLog activityLog={activityLog} />,
       },
+      {
+        id: EndpointDetailsTabsTypes.actionsConsole,
+        name: i18.ACTIONS_CONSOLE,
+        route: getEndpointDetailsPath({
+          ...queryParams,
+          name: 'endpointActionsConsole',
+          selected_endpoint: id,
+        }),
+        content:
+          hostDetails === undefined ? (
+            ContentLoadingMarkup
+          ) : (
+            <EndpointActionsConsole
+              details={hostDetails}
+              policyInfo={policyInfo}
+              hostStatus={hostStatus}
+            />
+          ),
+      },
     ],
     [ContentLoadingMarkup, hostDetails, policyInfo, hostStatus, activityLog, queryParams]
   );
@@ -134,7 +154,7 @@ export const EndpointDetails = memo(() => {
         </EuiFlyoutBody>
       ) : (
         <>
-          {(show === 'details' || show === 'activity_log') && (
+          {(show === 'details' || show === 'activity_log' || show === 'actions_console') && (
             <EndpointDetailsFlyoutTabs
               hostname={hostDetails.host.hostname}
               show={show}

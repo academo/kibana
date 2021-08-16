@@ -71,7 +71,8 @@ export const getEndpointDetailsPath = (
       | 'endpointPolicyResponse'
       | 'endpointIsolate'
       | 'endpointUnIsolate'
-      | 'endpointActivityLog';
+      | 'endpointActivityLog'
+      | 'endpointActionsConsole';
   } & EndpointIndexUIQueryParams &
     EndpointDetailsUrlProps,
   search?: string
@@ -95,6 +96,9 @@ export const getEndpointDetailsPath = (
       break;
     case 'endpointActivityLog':
       queryParams.show = 'activity_log';
+      break;
+    case 'endpointActionsConsole':
+      queryParams.show = 'actions_console';
       break;
   }
 

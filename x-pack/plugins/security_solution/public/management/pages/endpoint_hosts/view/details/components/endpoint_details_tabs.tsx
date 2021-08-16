@@ -19,6 +19,7 @@ import { useAppUrl } from '../../../../../../common/lib/kibana';
 export enum EndpointDetailsTabsTypes {
   overview = 'details',
   activityLog = 'activity_log',
+  actionsConsole = 'actions_console',
 }
 
 export type EndpointDetailsTabsId =

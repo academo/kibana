@@ -215,6 +215,7 @@ export const uiQueryParams: (
         'isolate',
         'unisolate',
         'activity_log',
+        'actions_console',
       ];
 
       for (const key of keys) {
