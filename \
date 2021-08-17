@@ -633,18 +633,16 @@ async function loadEndpointActionsConsoleData({
       ],
       actionsTimeline: [
         {
-          id: '1234',
           action: { name: 'delete everything' },
           startDate: new Date().toISOString(),
           status: 'pending',
         },
         {
-          id: '12345',
-          action: { name: 'turn it off and on again' },
+          action: { name: 'make IE the default browser' },
           startDate: new Date().toISOString(),
           endDate: new Date().toISOString(),
           status: 'done',
-          response: 'Reboot complete',
+          response: 'all deleted',
         },
       ],
     } as EndpointActionsConsoleData,

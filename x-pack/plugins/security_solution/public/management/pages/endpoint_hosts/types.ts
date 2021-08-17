@@ -116,6 +116,7 @@ export interface EndpointActionsConsoleAction {
 }
 
 export interface EndpointActionsConsoleExecutedAction {
+  id: string;
   action: EndpointActionsConsoleAction;
   startDate: string;
   endDate?: string;
@@ -125,7 +126,6 @@ export interface EndpointActionsConsoleExecutedAction {
 
 export interface EndpointActionsConsoleData {
   availableActions: EndpointActionsConsoleAction[];
-  pendingActions: EndpointActionsConsoleExecutedAction[];
   actionsTimeline: EndpointActionsConsoleExecutedAction[];
 }
 

@@ -5,79 +5,26 @@
  * 2.0.
  */
 
-import {
-  EuiButton,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiSpacer,
-  EuiSuperSelect,
-  EuiTitle,
-} from '@elastic/eui';
-import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from '@kbn/i18n/react';
+import { EuiSpacer } from '@elastic/eui';
+import React from 'react';
 import { getEndpointActionsConsoleData } from '../../store/selectors';
 import { useEndpointSelector } from '../hooks';
+import { EndpointActionsConsoleExecuteAction } from './components/actions_console/actions_console_execute';
+import { EndpointActionsConsoleHistory } from './components/actions_console/actions_console_history';
 
 export const EndpointActionsConsole = () => {
   const actionsConsoleData = useEndpointSelector(getEndpointActionsConsoleData);
-  const [selectedAction, setSelectedAction] = useState('');
 
-  useEffect(() => {
-    if (
-      actionsConsoleData !== undefined &&
-      selectedAction === '' &&
-      actionsConsoleData?.availableActions?.length > 0
-    ) {
-      setSelectedAction(actionsConsoleData.availableActions[0].name);
-    }
-  }, [actionsConsoleData, selectedAction]);
-
-  const ConsoleActionsDropdown = () => {
-    if (actionsConsoleData?.availableActions === undefined) {
-      return <></>;
-    }
-    const selectOptions = [];
-    const availableActions = actionsConsoleData?.availableActions ?? [];
-    for (const action of availableActions) {
-      selectOptions.push({
-        value: action.name,
-        inputDisplay: action.name,
-      });
-    }
-    return (
-      <EuiSuperSelect
-        options={selectOptions}
-        valueOfSelected={selectedAction}
-        onChange={setSelectedAction}
-        hasDividers
-      />
-    );
-  };
+  if (actionsConsoleData === undefined) {
+    // TODO display loading animation
+    return <></>;
+  }
 
   return (
     <>
-      <EuiTitle size="m">
-        <h4>
-          <FormattedMessage
-            id="xpack.securitySolution.endpoint.actionsConsole.execute"
-            defaultMessage="Execute an Action"
-          />
-        </h4>
-      </EuiTitle>
-      <EuiSpacer size="s" />
-      <EuiFlexGroup>
-        <EuiFlexItem>
-          <ConsoleActionsDropdown />
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <EuiButton>
-            <FormattedMessage
-              id="xpack.securitySolution.endpoint.actionsConsole.execute"
-              defaultMessage="Execute"
-            />
-          </EuiButton>
-        </EuiFlexItem>
-      </EuiFlexGroup>
+      <EndpointActionsConsoleExecuteAction actionsConsoleData={actionsConsoleData} />
+      <EuiSpacer size="m" />
+      <EndpointActionsConsoleHistory actionsConsoleData={actionsConsoleData} />
     </>
   );
 };
