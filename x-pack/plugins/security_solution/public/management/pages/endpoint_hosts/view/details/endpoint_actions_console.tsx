@@ -7,31 +7,53 @@
 
 import { EuiButton, EuiSpacer } from '@elastic/eui';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { getEndpointActionsConsoleData, uiQueryParams } from '../../store/selectors';
+import { EndpointActionsConsoleAction } from '../../types';
 import { useEndpointSelector } from '../hooks';
 import { EndpointActionsConsoleExecuteAction } from './components/actions_console/actions_console_execute';
 import { EndpointActionsConsoleHistory } from './components/actions_console/actions_console_history';
 
 export const EndpointActionsConsole = () => {
-  const [isExecutingAction, setIsExecutingAction] = useState(false);
+  const [isShowingExecuteActionForm, setIsShowingExecuteActionForm] = useState(false);
 
   const actionsConsoleData = useEndpointSelector(getEndpointActionsConsoleData);
   const queryParams = useEndpointSelector(uiQueryParams);
   const selectedEndpoint = queryParams.selected_endpoint;
+  const dispatch = useDispatch();
 
   if (actionsConsoleData === undefined) {
     // TODO display loading animation
     return <></>;
   }
 
-  if (isExecutingAction) {
+  const handleSubmit = ({
+    action,
+    endpointIds,
+  }: {
+    action: EndpointActionsConsoleAction;
+    endpointIds: string[];
+  }) => {
+    setIsShowingExecuteActionForm(false);
+    console.log('dispatching');
+    dispatch({
+      type: 'fakeEndpointActionExecuteAction',
+      payload: {
+        action,
+        endpointIds,
+      },
+    });
+  };
+
+  if (isShowingExecuteActionForm) {
     return (
       <>
         <EndpointActionsConsoleExecuteAction
           actionsConsoleData={actionsConsoleData}
           endpointId={selectedEndpoint}
+          onSubmit={handleSubmit}
           onCancel={() => {
-            setIsExecutingAction(false);
+            setIsShowingExecuteActionForm(false);
           }}
         />
       </>
@@ -40,7 +62,7 @@ export const EndpointActionsConsole = () => {
 
   return (
     <>
-      <EuiButton onClick={() => setIsExecutingAction(true)}>Execute an Action</EuiButton>
+      <EuiButton onClick={() => setIsShowingExecuteActionForm(true)}>Execute an Action</EuiButton>
       <EuiSpacer size="m" />
       <EndpointActionsConsoleHistory
         actionsConsoleData={actionsConsoleData}

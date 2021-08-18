@@ -5,6 +5,8 @@
  * 2.0.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   EndpointDetailsActivityLogChanged,
   EndpointPackageInfoStateChanged,
@@ -18,7 +20,11 @@ import {
   getIsOnEndpointDetailsActivityLog,
   getCurrentIsolationRequestState,
 } from './selectors';
-import { EndpointState } from '../types';
+import {
+  EndpointActionsConsoleEndpointData,
+  EndpointActionsConsoleExecutedAction,
+  EndpointState,
+} from '../types';
 import { initialEndpointPageState } from './builders';
 import { AppAction } from '../../../../common/store/actions';
 import { ImmutableReducer } from '../../../../common/store';
@@ -405,6 +411,41 @@ export const endpointListReducer: StateReducer = (state = initialEndpointPageSta
     return {
       ...state,
       actionsConsoleData: action.payload,
+    };
+    // @ts-ignore
+  } else if (action.type === 'fakeEndpointActionExecuteAction') {
+    const current = state.actionsConsoleData;
+    if (current === undefined) {
+      return state;
+    }
+
+    // @ts-ignore
+    const payload = action.payload as any;
+
+    const consoleActionData: EndpointActionsConsoleExecutedAction = {
+      id: `idx${Math.floor(Math.random() * 10000)}`,
+      action: payload.action,
+      startDate: new Date().toISOString(),
+      status: 'pending',
+    };
+    for (const endpoint of payload.endpointIds) {
+      const endpointData = current.hosts.find(
+        (host) => host.id === endpoint
+      ) as EndpointActionsConsoleEndpointData;
+      if (endpointData && endpointData.id) {
+        endpointData.actionsTimeline.unshift(consoleActionData);
+      } else {
+        // @ts-ignore
+        current.hosts.push({
+          id: endpoint,
+          availableActions: ['this is a fake action'],
+          actionsTimeline: [consoleActionData],
+        });
+      }
+    }
+    return {
+      ...state,
+      actionsConsoleData: { ...current },
     };
   }
 

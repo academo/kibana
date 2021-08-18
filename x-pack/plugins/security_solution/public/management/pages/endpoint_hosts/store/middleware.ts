@@ -621,10 +621,70 @@ async function loadEndpointActionsConsoleData({
 
   const { dispatch } = store;
   const availableActions = [
+    {
+      name: 'retrieve file',
+      params: [
+        {
+          name: 'file_name',
+          label: 'file name',
+          type: 'string',
+          optional: false,
+        },
+      ],
+    },
+    {
+      name: 'upload and execute',
+      params: [
+        {
+          name: 'file_name',
+          label: 'File to execute',
+          type: 'file',
+          optional: false,
+        },
+        {
+          name: 'notifu',
+          label: 'Notify the user about this action?',
+          type: 'select',
+          options: [
+            {
+              label: 'yes',
+              id: 'yes',
+            },
+            {
+              label: 'no',
+              id: 'no',
+            },
+          ],
+          optional: true,
+          default: 'false',
+        },
+      ],
+    },
+    {
+      name: 'make IE the default browser',
+      params: [
+        {
+          name: 'display_welcome',
+          label: 'Show why IE is better popup?',
+          type: 'select',
+          options: [
+            {
+              label: 'yes',
+              id: 'yes',
+            },
+            {
+              label: 'no',
+              id: 'no',
+            },
+          ],
+          optional: true,
+          default: 'false',
+        },
+      ],
+    },
     { name: 'delete everything' },
     { name: 'list quarantined items' },
     { name: 'turn it off and on again' },
-    { name: 'make IE the default browser' },
   ];
 
   dispatch({

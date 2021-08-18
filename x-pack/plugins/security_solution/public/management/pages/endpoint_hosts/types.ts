@@ -111,8 +111,17 @@ export interface EndpointState {
   actionsConsoleData?: EndpointActionsConsoleData;
 }
 
+export interface EndpointActionsConsoleActionParameter {
+  name: string;
+  label: string;
+  type: 'string' | 'file' | 'select';
+  value?: string;
+  options?: Array<{ label: string; id: string }>;
+}
+
 export interface EndpointActionsConsoleAction {
   name: string;
+  params: EndpointActionsConsoleActionParameter[];
 }
 
 export interface EndpointActionsConsoleExecutedAction {
