@@ -42,7 +42,6 @@ import {
 } from './selectors';
 import {
   AgentIdsPendingActions,
-  EndpointActionsConsoleData,
   EndpointState,
   PolicyIds,
   TransformStats,
@@ -621,33 +620,47 @@ async function loadEndpointActionsConsoleData({
   }
 
   const { dispatch } = store;
+  const availableActions = [
+    { name: 'delete everything' },
+    { name: 'list quarantined items' },
+    { name: 'turn it off and on again' },
+    { name: 'make IE the default browser' },
+  ];
 
   dispatch({
     type: 'serverReturnedEndpointActionsConsoleData',
     payload: {
-      availableActions: [
-        { name: 'delete everything' },
-        { name: 'list quarantined items' },
-        { name: 'turn it off and on again' },
-        { name: 'make IE the default browser' },
-      ],
-      actionsTimeline: [
+      hosts: [
         {
-          id: '1234',
-          action: { name: 'delete everything' },
-          startDate: new Date().toISOString(),
-          status: 'pending',
-        },
-        {
-          id: '12345',
-          action: { name: 'turn it off and on again' },
-          startDate: new Date().toISOString(),
-          endDate: new Date().toISOString(),
-          status: 'done',
-          response: 'Reboot complete',
+          id: '5bf7f8b2-9f98-4c8e-9ee7-af28d843fc90',
+          availableActions,
+          actionsTimeline: [
+            {
+              id: '1234',
+              action: { name: 'delete everything' },
+              startDate: new Date().toISOString(),
+              status: 'pending',
+            },
+            {
+              id: '12345',
+              action: { name: 'turn it off and on again' },
+              startDate: new Date().toISOString(),
+              endDate: new Date().toISOString(),
+              status: 'done',
+              response: 'Reboot complete',
+            },
+            {
+              id: '5433',
+              action: { name: 'sleep(60)' },
+              startDate: new Date().toISOString(),
+              endDate: new Date().toISOString(),
+              status: 'done',
+              response: '1 minute freeze complete',
+            },
+          ],
         },
       ],
-    } as EndpointActionsConsoleData,
+    },
   });
 }
 

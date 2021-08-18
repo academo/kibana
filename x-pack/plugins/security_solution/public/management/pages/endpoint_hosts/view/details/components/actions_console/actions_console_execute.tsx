@@ -5,7 +5,14 @@
  * 2.0.
  */
 
-import { EuiButton, EuiSpacer, EuiSuperSelect, EuiTitle } from '@elastic/eui';
+import {
+  EuiButton,
+  EuiButtonEmpty,
+  EuiSpacer,
+  EuiSuperSelect,
+  EuiSuperSelectOption,
+  EuiTitle,
+} from '@elastic/eui';
 import React, { useState } from 'react';
 import { FormattedMessage } from '@kbn/i18n/react';
 import { EndpointActionsConsoleData } from '../../../../types';
@@ -13,18 +20,45 @@ import { ImmutableObject } from '../../../../../../../../common/endpoint/types';
 
 export const EndpointActionsConsoleExecuteAction = ({
   actionsConsoleData,
+  endpointId,
+  onCancel,
 }: {
   actionsConsoleData: ImmutableObject<EndpointActionsConsoleData>;
+  endpointId?: string | string[];
+  onCancel: () => void;
 }) => {
   const [selectedAction, setSelectedAction] = useState('');
+  // const [endpoints, setEndpoints] = useState([]);
 
   const ConsoleActionsDropdown = () => {
-    if (actionsConsoleData?.availableActions === undefined) {
+    if (actionsConsoleData?.hosts?.length === 0) {
       return <></>;
     }
-    const selectOptions = [];
-    const availableActions = actionsConsoleData?.availableActions ?? [];
-    for (const action of availableActions) {
+    const selectOptions: Array<EuiSuperSelectOption<string>> = [];
+
+    // TODO select endpoints
+    if (endpointId === undefined) {
+      return (
+        <>
+          <EndpointSelector />
+          <EuiButtonEmpty onClick={onCancel}>
+            <FormattedMessage
+              id="xpack.securitySolution.endpoint.actionsConsole.cancel"
+              defaultMessage="Cancel"
+            />
+          </EuiButtonEmpty>
+        </>
+      );
+    }
+
+    // TODO logic to combine actions possible to all selected `endpointId`
+    const endpointData = actionsConsoleData?.hosts.find((host) => host.id === endpointId);
+
+    if (endpointData === undefined) {
+      return <NoActionsAvailable onCancel={onCancel} />;
+    }
+
+    for (const action of endpointData.availableActions) {
       selectOptions.push({
         value: action.name,
         inputDisplay: action.name,
@@ -59,8 +93,47 @@ export const EndpointActionsConsoleExecuteAction = ({
           defaultMessage="Execute"
         />
       </EuiButton>
+      <EuiButtonEmpty onClick={onCancel}>
+        <FormattedMessage
+          id="xpack.securitySolution.endpoint.actionsConsole.cancel"
+          defaultMessage="Cancel"
+        />
+      </EuiButtonEmpty>
     </>
   );
 };
-
 EndpointActionsConsoleExecuteAction.displayName = 'EndpointActionsConsoleExecuteAction';
+
+const EndpointSelector = () => {
+  return (
+    <>
+      <b>
+        <FormattedMessage
+          id="xpack.securitySolution.endpoint.actionsConsole.todo"
+          defaultMessage="TODO - Select an endpoint here"
+        />
+      </b>
+    </>
+  );
+};
+EndpointSelector.displayName = 'EndpointSelector';
+
+const NoActionsAvailable = ({ onCancel }: { onCancel: () => void }) => {
+  return (
+    <>
+      <b>
+        <FormattedMessage
+          id="xpack.securitySolution.endpoint.actionsConsole.noActions"
+          defaultMessage="No actions available for this endpoint"
+        />
+      </b>
+      <EuiButtonEmpty onClick={onCancel}>
+        <FormattedMessage
+          id="xpack.securitySolution.endpoint.actionsConsole.return"
+          defaultMessage="Return"
+        />
+      </EuiButtonEmpty>
+    </>
+  );
+};
+NoActionsAvailable.displayName = 'NoActionsAvailable';

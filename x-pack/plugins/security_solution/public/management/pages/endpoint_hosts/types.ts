@@ -125,6 +125,11 @@ export interface EndpointActionsConsoleExecutedAction {
 }
 
 export interface EndpointActionsConsoleData {
+  hosts: EndpointActionsConsoleEndpointData[];
+}
+
+export interface EndpointActionsConsoleEndpointData {
+  id: string;
   availableActions: EndpointActionsConsoleAction[];
   actionsTimeline: EndpointActionsConsoleExecutedAction[];
 }

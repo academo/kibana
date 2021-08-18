@@ -5,26 +5,47 @@
  * 2.0.
  */
 
-import { EuiSpacer } from '@elastic/eui';
-import React from 'react';
-import { getEndpointActionsConsoleData } from '../../store/selectors';
+import { EuiButton, EuiSpacer } from '@elastic/eui';
+import React, { useState } from 'react';
+import { getEndpointActionsConsoleData, uiQueryParams } from '../../store/selectors';
 import { useEndpointSelector } from '../hooks';
 import { EndpointActionsConsoleExecuteAction } from './components/actions_console/actions_console_execute';
 import { EndpointActionsConsoleHistory } from './components/actions_console/actions_console_history';
 
 export const EndpointActionsConsole = () => {
+  const [isExecutingAction, setIsExecutingAction] = useState(false);
+
   const actionsConsoleData = useEndpointSelector(getEndpointActionsConsoleData);
+  const queryParams = useEndpointSelector(uiQueryParams);
+  const selectedEndpoint = queryParams.selected_endpoint;
 
   if (actionsConsoleData === undefined) {
     // TODO display loading animation
     return <></>;
   }
 
+  if (isExecutingAction) {
+    return (
+      <>
+        <EndpointActionsConsoleExecuteAction
+          actionsConsoleData={actionsConsoleData}
+          endpointId={selectedEndpoint}
+          onCancel={() => {
+            setIsExecutingAction(false);
+          }}
+        />
+      </>
+    );
+  }
+
   return (
     <>
-      <EndpointActionsConsoleExecuteAction actionsConsoleData={actionsConsoleData} />
+      <EuiButton onClick={() => setIsExecutingAction(true)}>Execute an Action</EuiButton>
       <EuiSpacer size="m" />
-      <EndpointActionsConsoleHistory actionsConsoleData={actionsConsoleData} />
+      <EndpointActionsConsoleHistory
+        actionsConsoleData={actionsConsoleData}
+        endpointId={selectedEndpoint}
+      />
     </>
   );
 };

@@ -22,21 +22,20 @@ import { ImmutableObject } from '../../../../../../../../common/endpoint/types';
 
 export const EndpointActionsConsoleHistory = ({
   actionsConsoleData,
+  endpointId,
 }: {
   actionsConsoleData: ImmutableObject<EndpointActionsConsoleData>;
+  endpointId?: string;
 }) => {
   const [itemIdToExpandedRowMap, setItemIdToExpandedRowMap] = useState({});
 
-  if (actionsConsoleData === undefined) {
+  if (actionsConsoleData?.hosts?.length === 0) {
     // TODO show loading
     return <></>;
   }
 
-  console.log(actionsConsoleData);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const toggleDetails = (item: any) => {
-    console.log(item);
     const itemIdToExpandedRowMapValues = { ...itemIdToExpandedRowMap };
     if (itemIdToExpandedRowMapValues[item.id]) {
       delete itemIdToExpandedRowMapValues[item.id];
@@ -61,6 +60,11 @@ export const EndpointActionsConsoleHistory = ({
 
   const columns = [
     {
+      field: 'endpoint',
+      name: 'Endpoint',
+      sortable: true,
+    },
+    {
       field: 'startDate',
       name: 'Start Date',
       sortable: true,
@@ -71,7 +75,7 @@ export const EndpointActionsConsoleHistory = ({
       sortable: true,
     },
     {
-      field: 'name',
+      field: 'action',
       name: 'Action Name',
       sortable: true,
       render: (action: { name: string }) => {
@@ -99,7 +103,7 @@ export const EndpointActionsConsoleHistory = ({
       width: '40px',
       isExpander: true,
       // eslint-disable-next-line react/display-name
-      render: (item) =>
+      render: (item: { response: unknown; id: string | number }) =>
         item.response ? (
           <EuiButtonIcon
             onClick={() => toggleDetails(item)}
@@ -111,16 +115,9 @@ export const EndpointActionsConsoleHistory = ({
         ),
     },
   ];
-  const items = actionsConsoleData.actionsTimeline.map((item) => {
-    return {
-      startDate: item.startDate,
-      endDate: item.endDate,
-      name: item.action,
-      response: item.response,
-      status: item.status,
-      id: item.id,
-    };
-  });
+
+  const items = getTableItems(actionsConsoleData, endpointId);
+
   return (
     <>
       <EuiTitle size="m">
@@ -142,5 +139,20 @@ export const EndpointActionsConsoleHistory = ({
     </>
   );
 };
-
 EndpointActionsConsoleHistory.displayName = 'EndpointActionsConsoleHistory';
+
+function getTableItems(
+  actionsConsoleData: ImmutableObject<EndpointActionsConsoleData>,
+  endpointId?: string
+) {
+  const items = [];
+
+  for (const host of actionsConsoleData.hosts) {
+    if (endpointId === undefined || host.id === endpointId) {
+      for (const item of host.actionsTimeline) {
+        items.push({ ...item, endpoint: host.id });
+      }
+    }
+  }
+  return items;
+}
