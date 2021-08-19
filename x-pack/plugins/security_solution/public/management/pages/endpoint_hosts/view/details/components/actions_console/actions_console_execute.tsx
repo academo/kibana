@@ -10,6 +10,7 @@
 import {
   EuiButton,
   EuiButtonEmpty,
+  EuiComboBox,
   EuiFieldText,
   EuiFilePicker,
   EuiFormRow,
@@ -18,7 +19,7 @@ import {
   EuiSuperSelect,
   EuiTitle,
 } from '@elastic/eui';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from '@kbn/i18n/react';
 import {
   EndpointActionsConsoleAction,
@@ -49,29 +50,17 @@ export const EndpointActionsConsoleExecuteAction = ({
     params: [],
   } as EndpointActionsConsoleAction);
   const [payload, setPayload] = useState([]);
-  // const [endpoints, setEndpoints] = useState([]);
+  const [selectedEndpoints, setSelectedEndpoints] = useState([] as string[]);
 
-  // TODO select endpoints
-  if (Array.isArray(endpointId)) {
-    return (
-      <>
-        <EndpointSelector />
-        <EuiButtonEmpty onClick={onCancel}>
-          <FormattedMessage
-            id="xpack.securitySolution.endpoint.actionsConsole.cancel"
-            defaultMessage="Cancel"
-          />
-        </EuiButtonEmpty>
-      </>
-    );
-  }
+  const endpointList = Array.isArray(endpointId) ? endpointId : [endpointId];
 
   // TODO logic to combine actions possible to all selected `endpointId`
-  const endpointData = actionsConsoleData?.hosts.find((host) => host.id === endpointId);
+  const endpointData = actionsConsoleData?.hosts[0];
 
   if (endpointData === undefined) {
     return <NoActionsAvailable onCancel={onCancel} />;
   }
+
   const selectOptions: Array<{ value: EndpointActionsConsoleAction; inputDisplay: string }> = [];
 
   for (const action of endpointData.availableActions) {
@@ -95,7 +84,7 @@ export const EndpointActionsConsoleExecuteAction = ({
         ...selectedAction,
         params: payload,
       },
-      endpointIds: Array.isArray(endpointId) ? endpointId : [endpointId],
+      endpointIds: selectedEndpoints,
     });
   };
 
@@ -110,12 +99,22 @@ export const EndpointActionsConsoleExecuteAction = ({
         </h4>
       </EuiTitle>
       <EuiSpacer size="s" />
-      <EuiSuperSelect
-        options={selectOptions}
-        valueOfSelected={selectedAction}
-        onChange={selectAction}
-        hasDividers
-      />
+      {Array.isArray(endpointId) ? (
+        <EuiFormRow label={'Select Endpoints'}>
+          <EndpointSelector endpointList={endpointList} onChange={setSelectedEndpoints} />
+        </EuiFormRow>
+      ) : (
+        ''
+      )}
+      <EuiSpacer size="s" />
+      <EuiFormRow label={'Select an Action'}>
+        <EuiSuperSelect
+          options={selectOptions}
+          valueOfSelected={selectedAction}
+          onChange={selectAction}
+          hasDividers
+        />
+      </EuiFormRow>
       <EuiSpacer size="s" />
       {selectedAction?.params?.length > 0 ? (
         <ActionParametersForm params={selectedAction.params} onChange={handleParamsChange} />
@@ -242,15 +241,40 @@ const ActionParametersElement = ({
   }
 };
 
-const EndpointSelector = () => {
+const EndpointSelector = ({
+  endpointList,
+  onChange,
+}: {
+  endpointList: string[];
+  onChange: (endpoints: string[]) => void;
+}) => {
+  const [selectedOptions, setSelected] = useState([] as Array<{ label: string }>);
+  const [options, setOptions] = useState([] as Array<{ label: string }>);
+
+  const handleChange = (newSelection: any) => {
+    setSelected(newSelection);
+    onChange(newSelection.map((option: any) => option.label));
+  };
+
+  useEffect(() => {
+    const parsedOptions = endpointList.map((endpoint) => ({
+      label: endpoint,
+    }));
+    setOptions(parsedOptions);
+
+    const preSelected = parsedOptions.length === 1 ? [parsedOptions[0]] : [];
+    setSelected(preSelected);
+  }, [endpointList]);
+
   return (
     <>
-      <b>
-        <FormattedMessage
-          id="xpack.securitySolution.endpoint.actionsConsole.todo"
-          defaultMessage="TODO - Select an endpoint here"
-        />
-      </b>
+      <EuiComboBox
+        placeholder="Select endpoints"
+        options={options}
+        selectedOptions={selectedOptions}
+        onChange={handleChange}
+        isClearable={true}
+      />
     </>
   );
 };
