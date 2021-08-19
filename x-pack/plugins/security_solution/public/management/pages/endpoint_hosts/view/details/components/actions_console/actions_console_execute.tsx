@@ -34,7 +34,7 @@ export const EndpointActionsConsoleExecuteAction = ({
   onSubmit,
 }: {
   actionsConsoleData: ImmutableObject<EndpointActionsConsoleData>;
-  endpointId?: string | string[];
+  endpointId: string | string[];
   onCancel: () => void;
   onSubmit: ({
     action,
@@ -52,7 +52,7 @@ export const EndpointActionsConsoleExecuteAction = ({
   // const [endpoints, setEndpoints] = useState([]);
 
   // TODO select endpoints
-  if (endpointId === undefined) {
+  if (Array.isArray(endpointId)) {
     return (
       <>
         <EndpointSelector />

@@ -5,7 +5,9 @@
  * 2.0.
  */
 
-import { EuiButton, EuiLoadingContent, EuiLoadingLogo, EuiSpacer } from '@elastic/eui';
+/* eslint-disable react/jsx-no-literals */
+
+import { EuiButton, EuiLoadingContent, EuiSpacer } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { getEndpointActionsConsoleData, listData, uiQueryParams } from '../../store/selectors';
@@ -23,15 +25,16 @@ export const EndpointActionsConsole = () => {
   const selectedEndpoint = queryParams.selected_endpoint;
   const dispatch = useDispatch();
 
+  // load actions console data if not available
   useEffect(() => {
     if (actionsConsoleData === undefined) {
-      // TODO display loading animation
       dispatch({
         type: 'loadEndpointActionsConsoleData',
       });
     }
   }, [actionsConsoleData, dispatch]);
 
+  // loading animation
   if (
     actionsConsoleData === undefined ||
     (selectedEndpoint === undefined && hostData?.length === 0)
@@ -39,6 +42,11 @@ export const EndpointActionsConsole = () => {
     return <EuiLoadingContent lines={5} />;
   }
 
+  const endpointList = hostData?.map((host) => {
+    return host.metadata.agent.id;
+  });
+
+  // fake submit to API
   const handleSubmit = ({
     action,
     endpointIds,
@@ -56,12 +64,13 @@ export const EndpointActionsConsole = () => {
     });
   };
 
+  // execute an action view
   if (isShowingExecuteActionForm) {
     return (
       <>
         <EndpointActionsConsoleExecuteAction
           actionsConsoleData={actionsConsoleData}
-          endpointId={selectedEndpoint}
+          endpointId={selectedEndpoint || endpointList}
           onSubmit={handleSubmit}
           onCancel={() => {
             setIsShowingExecuteActionForm(false);
