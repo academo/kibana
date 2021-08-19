@@ -50,7 +50,7 @@ export const TabbedEndpointList = () => {
         />
       }
     >
-      <EuiTabbedContent tabs={tabs} initialSelectedTab={tabs[1]} autoFocus="selected" />
+      <EuiTabbedContent tabs={tabs} initialSelectedTab={tabs[0]} autoFocus="selected" />
     </AdministrationListPage>
   );
 };
