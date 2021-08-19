@@ -412,7 +412,7 @@ export const endpointListReducer: StateReducer = (state = initialEndpointPageSta
       ...state,
       actionsConsoleData: action.payload,
     };
-    // @ts-ignore
+    // @ts-ignore - scaffolding code
   } else if (action.type === 'fakeEndpointActionExecuteAction') {
     const current = state.actionsConsoleData;
     if (current === undefined) {

@@ -35,7 +35,6 @@ export const EndpointActionsConsole = () => {
     endpointIds: string[];
   }) => {
     setIsShowingExecuteActionForm(false);
-    console.log('dispatching');
     dispatch({
       type: 'fakeEndpointActionExecuteAction',
       payload: {
