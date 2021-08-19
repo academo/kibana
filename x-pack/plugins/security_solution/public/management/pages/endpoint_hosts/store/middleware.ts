@@ -133,6 +133,14 @@ export const endpointMiddlewareFactory: ImmutableMiddlewareFactory<EndpointState
       });
     }
 
+    // @ts-ignore
+    if (action.type === 'loadEndpointActionsConsoleData') {
+      loadEndpointActionsConsoleData({
+        store,
+        http: coreStart.http,
+      });
+    }
+
     if (
       action.type === 'userChangedUrl' &&
       hasSelectedEndpoint(getState()) === true &&
@@ -608,17 +616,12 @@ async function endpointDetailsActivityLogPagingMiddleware({
 }
 
 async function loadEndpointActionsConsoleData({
-  selectedEndpoint,
   store,
 }: {
   store: ImmutableMiddlewareAPI<EndpointState, AppAction>;
   http: HttpStart;
   selectedEndpoint?: string;
 }) {
-  if (selectedEndpoint === undefined) {
-    return;
-  }
-
   const { dispatch } = store;
   const availableActions = [
     {

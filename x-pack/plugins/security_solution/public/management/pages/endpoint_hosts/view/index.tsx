@@ -52,7 +52,6 @@ import { EndpointAction } from '../store/action';
 import { EndpointPolicyLink } from './components/endpoint_policy_link';
 import { OutOfDate } from './components/out_of_date';
 import { AdminSearchBar } from './components/search_bar';
-import { AdministrationListPage } from '../../../components/administration_list_page';
 import { useKibana } from '../../../../../../../../src/plugins/kibana_react/public';
 import { LinkToApp } from '../../../../common/components/endpoint/link_to_app';
 import { TableRowActions } from './components/table_row_actions';
@@ -613,21 +612,7 @@ export const EndpointList = () => {
   }, [showTransformFailedCallout, closeTransformFailedCallout, transformFailedCalloutDescription]);
 
   return (
-    <AdministrationListPage
-      data-test-subj="endpointPage"
-      title={
-        <FormattedMessage
-          id="xpack.securitySolution.endpoint.list.pageTitle"
-          defaultMessage="Endpoints"
-        />
-      }
-      subtitle={
-        <FormattedMessage
-          id="xpack.securitySolution.endpoint.list.pageSubTitle"
-          defaultMessage="Hosts running endpoint security"
-        />
-      }
-    >
+    <>
       {hasSelectedEndpoint && <EndpointDetailsFlyout />}
       <>
         {areEndpointsEnrolling && !hasErrorFindingTotals && (
@@ -706,6 +691,6 @@ export const EndpointList = () => {
         </>
       )}
       {renderTableOrEmptyState}
-    </AdministrationListPage>
+    </>
   );
 };

@@ -5,10 +5,10 @@
  * 2.0.
  */
 
-import { EuiButton, EuiSpacer } from '@elastic/eui';
-import React, { useState } from 'react';
+import { EuiButton, EuiLoadingContent, EuiLoadingLogo, EuiSpacer } from '@elastic/eui';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getEndpointActionsConsoleData, uiQueryParams } from '../../store/selectors';
+import { getEndpointActionsConsoleData, listData, uiQueryParams } from '../../store/selectors';
 import { EndpointActionsConsoleAction } from '../../types';
 import { useEndpointSelector } from '../hooks';
 import { EndpointActionsConsoleExecuteAction } from './components/actions_console/actions_console_execute';
@@ -18,13 +18,25 @@ export const EndpointActionsConsole = () => {
   const [isShowingExecuteActionForm, setIsShowingExecuteActionForm] = useState(false);
 
   const actionsConsoleData = useEndpointSelector(getEndpointActionsConsoleData);
+  const hostData = useEndpointSelector(listData);
   const queryParams = useEndpointSelector(uiQueryParams);
   const selectedEndpoint = queryParams.selected_endpoint;
   const dispatch = useDispatch();
 
-  if (actionsConsoleData === undefined) {
-    // TODO display loading animation
-    return <></>;
+  useEffect(() => {
+    if (actionsConsoleData === undefined) {
+      // TODO display loading animation
+      dispatch({
+        type: 'loadEndpointActionsConsoleData',
+      });
+    }
+  }, [actionsConsoleData, dispatch]);
+
+  if (
+    actionsConsoleData === undefined ||
+    (selectedEndpoint === undefined && hostData?.length === 0)
+  ) {
+    return <EuiLoadingContent lines={5} />;
   }
 
   const handleSubmit = ({
