@@ -79,12 +79,13 @@ export const EndpointActionsConsoleExecuteAction = ({
   };
 
   const doSubmit = () => {
+    const endpointIds = endpointList.length === 1 ? endpointList : selectedEndpoints;
     onSubmit({
       action: {
         ...selectedAction,
         params: payload,
       },
-      endpointIds: selectedEndpoints,
+      endpointIds,
     });
   };
 
