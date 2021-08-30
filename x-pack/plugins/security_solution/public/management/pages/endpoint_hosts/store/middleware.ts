@@ -7,6 +7,7 @@
 
 import { Dispatch } from 'redux';
 import { CoreStart, HttpStart } from 'kibana/public';
+import { random, sample, some } from 'lodash';
 import {
   ActivityLog,
   HostInfo,
@@ -42,6 +43,8 @@ import {
 } from './selectors';
 import {
   AgentIdsPendingActions,
+  EndpointActionsConsoleEndpointData,
+  EndpointActionsConsoleExecutedAction,
   EndpointState,
   PolicyIds,
   TransformStats,
@@ -141,6 +144,11 @@ export const endpointMiddlewareFactory: ImmutableMiddlewareFactory<EndpointState
         store,
         http: coreStart.http,
       });
+    }
+
+    // @ts-ignore
+    if (action.type === 'fakeEndpointActionExecuteAction') {
+      handleFakeActionConsoleExecution({ store, action });
     }
 
     if (
@@ -524,7 +532,6 @@ async function endpointDetailsListMiddleware({
   }
 }
 
-
 async function loadEndpointActionsConsoleData({
   store,
 }: {
@@ -599,42 +606,128 @@ async function loadEndpointActionsConsoleData({
     { name: 'list quarantined items' },
     { name: 'turn it off and on again' },
   ];
-
-  dispatch({
-    type: 'serverReturnedEndpointActionsConsoleData',
-    payload: {
-      hosts: [
+  const hosts = [
+    {
+      id: '5bf7f8b2-9f98-4c8e-9ee7-af28d843fc90',
+      availableActions,
+      actionsTimeline: [
         {
-          id: '5bf7f8b2-9f98-4c8e-9ee7-af28d843fc90',
-          availableActions,
-          actionsTimeline: [
-            {
-              id: '1234',
-              action: { name: 'delete everything' },
-              startDate: new Date().toISOString(),
-              status: 'pending',
-            },
-            {
-              id: '12345',
-              action: { name: 'turn it off and on again' },
-              startDate: new Date().toISOString(),
-              endDate: new Date().toISOString(),
-              status: 'done',
-              response: 'Reboot complete',
-            },
-            {
-              id: '5433',
-              action: { name: 'sleep(60)' },
-              startDate: new Date().toISOString(),
-              endDate: new Date().toISOString(),
-              status: 'done',
-              response: '1 minute freeze complete',
-            },
-          ],
+          id: '1234',
+          action: { name: 'delete everything' },
+          startDate: new Date().toISOString(),
+          status: 'done',
+        },
+        {
+          id: '12345',
+          action: { name: 'turn it off and on again' },
+          startDate: new Date().toISOString(),
+          endDate: new Date().toISOString(),
+          status: 'done',
+          response: 'Reboot complete',
+        },
+        {
+          id: '5433',
+          action: { name: 'sleep(60)' },
+          startDate: new Date().toISOString(),
+          endDate: new Date().toISOString(),
+          status: 'failed',
+          response: 'User canceled reboot order',
         },
       ],
     },
+  ];
+
+  dispatch({
+    type: 'serverReturnedEndpointActionsConsoleData',
+    // @ts-ignore
+    payload: { hosts },
   });
+}
+
+function handleFakeActionConsoleExecution({
+  store,
+  action,
+}: {
+  store: ImmutableMiddlewareAPI<EndpointState, AppAction>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  action: any;
+}) {
+  const { dispatch } = store;
+  const state = store.getState();
+  const current = state.actionsConsoleData;
+  if (current === undefined) {
+    return state;
+  }
+
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const payload = action.payload as any;
+
+  for (const endpoint of payload.endpointIds) {
+    const consoleActionData: EndpointActionsConsoleExecutedAction = {
+      id: `idx${Math.floor(Math.random() * 10000)}`,
+      action: payload.action,
+      startDate: new Date().toISOString(),
+      status: 'pending',
+    };
+    setTimeout(() => {
+      fakeConsoleActionResponse({ store, actionId: consoleActionData.id });
+    }, random(2, 6) * 1000);
+    const endpointData = current.hosts.find(
+      (host) => host.id === endpoint
+    ) as EndpointActionsConsoleEndpointData;
+    if (endpointData && endpointData.id) {
+      endpointData.actionsTimeline.unshift(consoleActionData);
+    } else {
+      // @ts-ignore
+      current.hosts.push({
+        id: endpoint,
+        availableActions: ['this is a fake action'],
+        actionsTimeline: [consoleActionData],
+      });
+    }
+  }
+  dispatch({
+    type: 'serverReturnedEndpointActionsConsoleData',
+    // @ts-ignore
+    payload: { hosts: current.hosts },
+  });
+}
+
+function fakeConsoleActionResponse({
+  store,
+  actionId,
+}: {
+  store: ImmutableMiddlewareAPI<EndpointState, AppAction>;
+  actionId: string;
+}) {
+  const { dispatch } = store;
+  const state = store.getState();
+  const current = state.actionsConsoleData;
+
+  const status = sample(['done', 'failed']);
+  const response = `Response ${random()}`;
+
+  if (current?.hosts === undefined) {
+    return;
+  }
+
+  for (const host of current.hosts) {
+    for (const action of host.actionsTimeline) {
+      if (action.id === actionId) {
+        // @ts-ignore
+        action.status = status;
+        // @ts-ignore
+        action.response = response;
+        dispatch({
+          type: 'serverReturnedEndpointActionsConsoleData',
+          // @ts-ignore
+          payload: { hosts: current.hosts },
+        });
+        return;
+      }
+    }
+  }
 }
 
 async function loadEndpointDetails({

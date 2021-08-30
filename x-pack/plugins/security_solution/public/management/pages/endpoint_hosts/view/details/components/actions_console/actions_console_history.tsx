@@ -14,6 +14,7 @@ import {
   EuiButtonIcon,
   EuiText,
   EuiPanel,
+  EuiLoadingSpinner,
 } from '@elastic/eui';
 import { FormattedMessage } from '@kbn/i18n/react';
 import { RIGHT_ALIGNMENT } from '@elastic/eui/lib/services';
@@ -88,14 +89,19 @@ export const EndpointActionsConsoleHistory = ({
       dataType: 'boolean',
       // eslint-disable-next-line react/display-name
       render: (status: string) => {
-        let color = '';
         switch (status) {
           case 'failed':
-            color = 'danger';
+            return <EuiHealth color={'danger'}>{status}</EuiHealth>;
           case 'done':
-            color = 'success';
+            return <EuiHealth color={'success'}>{status}</EuiHealth>;
+          case 'pending':
+            return (
+              <>
+                <EuiLoadingSpinner size="s" />
+                <EuiHealth color={'text'}>{status}</EuiHealth>
+              </>
+            );
         }
-        return <EuiHealth color={color}>{status}</EuiHealth>;
       },
     },
     {

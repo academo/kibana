@@ -412,41 +412,6 @@ export const endpointListReducer: StateReducer = (state = initialEndpointPageSta
       ...state,
       actionsConsoleData: action.payload,
     };
-    // @ts-ignore - scaffolding code
-  } else if (action.type === 'fakeEndpointActionExecuteAction') {
-    const current = state.actionsConsoleData;
-    if (current === undefined) {
-      return state;
-    }
-
-    // @ts-ignore
-    const payload = action.payload as any;
-
-    const consoleActionData: EndpointActionsConsoleExecutedAction = {
-      id: `idx${Math.floor(Math.random() * 10000)}`,
-      action: payload.action,
-      startDate: new Date().toISOString(),
-      status: 'pending',
-    };
-    for (const endpoint of payload.endpointIds) {
-      const endpointData = current.hosts.find(
-        (host) => host.id === endpoint
-      ) as EndpointActionsConsoleEndpointData;
-      if (endpointData && endpointData.id) {
-        endpointData.actionsTimeline.unshift(consoleActionData);
-      } else {
-        // @ts-ignore
-        current.hosts.push({
-          id: endpoint,
-          availableActions: ['this is a fake action'],
-          actionsTimeline: [consoleActionData],
-        });
-      }
-    }
-    return {
-      ...state,
-      actionsConsoleData: { ...current },
-    };
   }
 
   return state;
