@@ -75,10 +75,13 @@ export function useCanSeeHostIsolationExceptionsMenu() {
         setCanSeeMenu(false);
       }
     }
+    if (!canSeeMenu && privileges.canIsolateHost) {
+      setCanSeeMenu(true);
+    }
     if (!privileges.canIsolateHost) {
       checkIfHasExceptions();
     }
-  }, [http, privileges.canIsolateHost]);
+  }, [canSeeMenu, http, privileges.canIsolateHost]);
 
   return canSeeMenu;
 }
