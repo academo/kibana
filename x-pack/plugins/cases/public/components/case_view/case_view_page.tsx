@@ -46,6 +46,8 @@ export const CaseViewPage = React.memo<CaseViewPageProps>(
     const { navigateToCaseView } = useCaseViewNavigation();
     const { urlParams } = useUrlParams();
     const queryClient = useQueryClient();
+    const init = useRef(true);
+    const timelineUi = useTimelineContext()?.ui;
 
     useCasesTitleBreadcrumbs(caseData.title);
 
@@ -55,9 +57,6 @@ export const CaseViewPage = React.memo<CaseViewPageProps>(
       }
       return CASE_VIEW_PAGE_TABS.ACTIVITY;
     }, [urlParams.tabId]);
-
-    const init = useRef(true);
-    const timelineUi = useTimelineContext()?.ui;
 
     const handleRefresh = useCallback(() => {
       queryClient.invalidateQueries(CASE_VIEW_CACHE_KEY);
